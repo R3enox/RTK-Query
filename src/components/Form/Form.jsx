@@ -1,34 +1,38 @@
-import React, { useState } from 'react';
-import toast from 'react-hot-toast';
-import { BiMailSend } from 'react-icons/bi';
-import styles from './Form.module.css';
+import React, { useState } from "react";
+import toast from "react-hot-toast";
+import { BiMailSend } from "react-icons/bi";
+import styles from "./Form.module.css";
+import { useAddPostMutation } from "../../redux/commentApi";
 
 export const Form = () => {
-  const [author, setAuthor] = useState('');
-  const [content, setContent] = useState('');
+  // const [author, setAuthor] = useState('');
+  // const [content, setContent] = useState('');
+  const [data, setData] = useState({ author: "", content: "" });
+  const [addPos, { isError, isLoading }] = useAddPostMutation();
 
   const onHandleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
+    setData({ ...data, [name]: value });
   };
 
   const onHandleSubmit = (e) => {
     e.preventDefault();
 
-    setAuthor('');
-    setContent('');
+    addPos(data);
+    setData({ author: "", content: "" });
   };
 
   return (
     <div className={styles.formWrapper}>
+      {/* {isError && toast.error("An error has occurred")} */}
       <form className={styles.form} onSubmit={onHandleSubmit}>
         <label className={styles.label}>
           <span className={styles.labelName}>Full name</span>
           <input
-            type='text'
-            name='name'
+            type="text"
+            name="author"
             className={styles.input}
-            value={author}
+            value={data.author}
             onChange={onHandleChange}
           />
         </label>
@@ -37,16 +41,16 @@ export const Form = () => {
           <span className={styles.labelName}>Your comment</span>
           <textarea
             className={styles.input}
-            name='text'
-            rows='5'
-            value={content}
+            name="content"
+            rows="5"
+            value={data.content}
             onChange={onHandleChange}
           ></textarea>
         </label>
 
         <button className={styles.formBtn}>
           <BiMailSend className={styles.icon} />
-          Send
+          {isLoading ? "Sending..." : "Send"}
         </button>
       </form>
     </div>
